@@ -7,13 +7,21 @@
 
 			var users = {};
 
-			this.existsSession = function (yes, no) {
-				$http.get('/getSession')
+			this.existsSession = function (yes, no, however) {
+				$http.get('getSession')
 					.success(function (data) {
 						users[data.username] = data;
-						yes();
+						if (yes) yes();
+						if (however) however();
 					})
-					.error(no);
+					.error(function() {
+						if (no) no();
+						if (however) however();
+					});
+			};
+
+			this.getUsers = function getUsers() {
+				return users;
 			};
 
 			this.noLoggedUser = function () {
@@ -30,14 +38,12 @@
 					deferred.reject('Username and password should not be empty');
 				}
 				else {
-					$http.post('/login/', {
+					$http.post('login/', {
 						username: username,
 						password: password
 					})
 						.success(function (data, status, header, config) {
-							users.push({
-								username: username
-							});
+							users[data.username] = data;
 							deferred.resolve(true);
 						})
 						.error(function (data, status, header, config) {
