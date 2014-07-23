@@ -4,35 +4,30 @@
 	angular.module('dmAuth',['ng'])
 		.service('Auth', function Auth($http, $q) {
 			// AngularJS will instantiate a singleton by calling "new" on this function
+			var user = false;
 
-			var users = {};
-
-			this.existsSession = function (yes, no, however) {
+			this.existSession = function existSession(yes, no, however) {
+				var deferred = $q.defer();
 				$http.get('getSession')
 					.success(function (data) {
-						users[data.username] = data;
-						if (yes) yes();
-						if (however) however();
+						user = data;
+						deferred.resolve(true);
 					})
 					.error(function() {
-						if (no) no();
-						if (however) however();
+						deferred.reject('No session on the server');
 					});
+				return deferred.promise;
 			};
 
-			this.getUsers = function getUsers() {
-				return users;
+			this.getUserInfo = function getUserInfo() {
+				return user;
 			};
 
-			this.noLoggedUser = function () {
-				for (var key in users) {
-					if (users.hasOwnProperty(key))
-						return false;
-				}
-				return true;
+			this.noLoggedUser = function noLoggedUser() {
+				return !!user;
 			};
 
-			this.login = function (username, password) {
+			this.login = function login(username, password) {
 				var deferred = $q.defer();
 				if (!username || !password) {
 					deferred.reject('Username and password should not be empty');
@@ -43,7 +38,7 @@
 						password: password
 					})
 						.success(function (data, status, header, config) {
-							users[data.username] = data;
+							user = data;
 							deferred.resolve(true);
 						})
 						.error(function (data, status, header, config) {
@@ -53,10 +48,6 @@
 
 				return deferred.promise;
 			};
-
-			this.getUserInfo = function (username) {
-				return users[username];
-			}
 		});
 })(window, window.angular);
 
