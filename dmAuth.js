@@ -24,7 +24,7 @@
 			};
 
 			this.noLoggedUser = function noLoggedUser() {
-				return !!user;
+				return !user;
 			};
 
 			this.login = function login(username, password) {
