@@ -1,4 +1,4 @@
-(function(window, angular, undefined) {
+(function(window, angular) {
 	'use strict';
 	angular.module('dmAuth',['ng'])
 		.service('Auth', function Auth($http, $q) {
@@ -57,6 +57,7 @@
                     .error(function() {
                         deferred.resolve(false);
                     });
+                return deferred.promise;
             };
 		});
 })(window, window.angular);
