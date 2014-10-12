@@ -1,4 +1,3 @@
-
 (function(window, angular, undefined) {
 	'use strict';
 	angular.module('dmAuth',['ng'])
@@ -6,7 +5,7 @@
 			// AngularJS will instantiate a singleton by calling "new" on this function
 			var user = false;
 
-			this.existSession = function existSession(yes, no, however) {
+			this.existSession = function existSession() {
 				var deferred = $q.defer();
 				$http.get('getSession')
 					.success(function (data) {
@@ -48,6 +47,17 @@
 
 				return deferred.promise;
 			};
+
+            this.logout = function logout() {
+                var deferred = $q.defer();
+                $http.get('logout/')
+                    .success(function() {
+                        deferred.resolve(true);
+                    })
+                    .error(function() {
+                        deferred.resolve(false);
+                    });
+            };
 		});
 })(window, window.angular);
 
